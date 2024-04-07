@@ -7,6 +7,14 @@ const supaAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 const supabase = supa.createClient(supaUrl, supaAnonKey);
 
+// Enable CORS
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+  });
+
 //returns all the seasons
 app.get('/api/seasons', async (req, res) => {
     const {data, error} = await supabase
@@ -282,7 +290,7 @@ app.get('/api/races/circuits/:ref/season/:start/:end', async (req, res) => {
 app.get('/api/results/:raceId', async (req,res) => {
     const {data, error} = await supabase
     .from('results')
-    .select('drivers(driverRef, code, forename, surname), races(name, round, year, date), constructors(name, constructorRef, nationality)')
+    .select('position, drivers(driverRef, code, forename, surname), races(name, round, year, date), constructors(name, constructorRef, nationality)')
     .eq('raceId', req.params.raceId)
     .order('grid', {ascending: true})
     if (!handleNotFound(res, data, 'results not found!')) {
